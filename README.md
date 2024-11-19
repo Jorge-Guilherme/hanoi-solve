@@ -11,6 +11,8 @@ Consiste num famoso problema matemático e de lógica que foi proposto pelo mate
 3. Um disco maior nunca pode ser colocado sobre um disco menor.
 4. Você tem que mover todos os discos de uma torre para outra, utilizando uma torre auxiliar como "ajuda", se necessário.
 
+![](https://www.lavanguardia.com/files/image_449_220/uploads/2018/12/05/5fa449df9cf7b.jpeg)
+
 ### Sobre o algoritmo
 Basicamente, o algoritmo funciona de forma recursiva, onde vamos reduzindo a resolução em problemas menores **(n-1)**. No caso trivial, **N = 1**, movemos o único disco para a torre de destino. O código recebe um valor **N** de discos, a partir disso, calculamos a quantidade mínima de movimentos que podemos realizar para completar o jogo. Esse cálculo é feito utilizando a seguinte função **M(n) = 2^n - 1**. Onde **M(n)** é a quantidade de movimentos.
 
