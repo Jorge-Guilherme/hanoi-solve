@@ -1,12 +1,70 @@
+section .data                ; Usada para armazenar dados inicializados do programa
+
+    ; Modelo de saída
+    msg:
+                          db        "Mova o disco "  
+        disco:            db        " "
+                          db        "   "                      
+        torre_saida:      db        " "  
+                          db        " -> "    
+        torre_ida:        db        " ", 0xa  ; \n
+       
+        lenght            equ       $-msg
+    
+    txt db "Digite a quantidade de discos: " ; Mensagem do input
+    txt_len equ $ - txt ; 
+    
+
+section .bss
+    buffer resb 10 ; reservar 10 bytes no buffer
+
+
 section .text                         ; Usada para armazenar o executável
 
     global _start                     ; start do código
 
     _start:
+
+section .text
+    global _start
+
+_start:
+    
+    ; mensagem do input
+    mov eax, 4         ; syscall number (4 = sys_write)
+    mov ebx, 1         ; file descriptor (1 = stdout)
+    mov ecx, txt       ; endereço da mensagem a ser exibida
+    mov edx, txt_len   ; comprimento da mensagem
+    int 0x80           ; chamada de sistema
+
+    ; Ler a entrada do usuário
+    mov eax, 3           ; syscall 3: sys_read
+    mov ebx, 0           ; file descriptor 0 (stdin)
+    mov ecx, buffer      ; endereço do buffer para armazenar a entrada
+    mov edx, 10          ; tamanho máximo (10 bytes)
+    int 0x80             ; chamada ao kernel
+
+    ; Convertendo o número lido para um inteiro e armazenando em eax
+    mov ecx, 0           ; contador para o valor numérico
+    mov ebx, buffer      ; apontando para o buffer com a entrada
+
+convert_loop:
+    movzx edx, byte [ebx]   ; Carregar o próximo byte do buffer (um caractere)
+    cmp dl, 10              ; Verificar se é o caractere de nova linha (enter)
+    je done                 ; Se for, terminar a conversão
+    sub dl, '0'             ; Converter o caractere para número (ASCII '0' = 48)
+    imul ecx, ecx, 10       ; Multiplicar o valor atual por 10 (desloca a posição)
+    add ecx, edx            ; Adicionar o valor atual ao número
+    inc ebx                 ; Avançar para o próximo caractere
+    jmp convert_loop        ; Repetir o loop
+
+done:
+    mov eax, ecx            ; Armazenar o valor final (número) em eax
+
+
+
         push ebp                      ; empilha o registrador
         mov ebp, esp                  ; aponta o ponteiro do topo da pilha (nosso registrador)
-        
-        mov eax, 3                    ; Setando o número de discos
 
         ; Empurrando as torres e a quantidade de discos na pilha de referencia para que fiquem em ordem
         
@@ -14,6 +72,7 @@ section .text                         ; Usada para armazenar o executável
         push dword 2                  ; Torre B
         push dword 1                  ; Torre A
        
+
         push eax                      ; qtd de discos
 
         call hanoi                    ; Chamando o rótulo Hanoi
@@ -101,16 +160,3 @@ section .text                         ; Usada para armazenar o executável
         mov     esp, ebp              ; aponta o ponteiro da base da pilha (ebp) para o topo
         pop     ebp                   ; tira o elemento do topo da pilha e guarda o valor em ebp
         ret                           ; retira o ultimo valor do topo da pilha e da um jump para ele
-
-    section .data                         ; Usada para armazenar dados inicializados do programa
-
-    ; Modelo de saída
-    msg:
-                          db        "disc: "  
-        disco:            db        " "
-                          db        "   "                      
-        torre_saida:      db        " "  
-                          db        " -> "    
-        torre_ida:        db        " ", 0xa  ; \n
-       
-        lenght            equ       $-msg
